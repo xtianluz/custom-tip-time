@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +54,7 @@ fun TipTimeScreen() {
     var roundUp by remember { mutableStateOf( false ) }
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount, tipPercent)
+    val tip = calculateTip(amount, tipPercent, roundUp)
 
     Column(modifier = Modifier
         .fillMaxHeight()
@@ -148,16 +149,24 @@ fun RoundTheTipRow(modifier: Modifier = Modifier, roundUp: Boolean, onRoundupCha
             onCheckedChange = onRoundupChanged,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.End)
+                .wrapContentWidth(Alignment.End),
+            colors = SwitchDefaults.colors(
+                uncheckedThumbColor = Color.DarkGray,
+                checkedThumbColor = Color.Blue
+            )
         )
     }
 }
 
 private fun calculateTip(
     amount: Double,
-    tipPercent: Double = 15.0
+    tipPercent: Double = 15.0,
+    roundUp: Boolean
 ) : String {
-    val tip = tipPercent / 100 * amount
+    var tip = tipPercent / 100 * amount
+    if(roundUp){
+        tip = kotlin.math.ceil(tip)
+    }
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
